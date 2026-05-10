@@ -102,10 +102,9 @@ def measure_latency(
                     f"Failed to fetch from {hostname} at {ip}:{443 if https else 80}: {status_code}"
                 )
         except Exception as e:
-            latency = latency if latency else (time.time() - start_time)
+            latency = latency if latency is not None else (time.time() - start_time)
             print(f"{error('ERROR')}: Failed to connect to {hostname} at {ip}: {e}")
             failures += 1
-
         latencies.append(latency)
 
     return TestResult(
