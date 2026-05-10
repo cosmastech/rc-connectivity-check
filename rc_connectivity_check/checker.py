@@ -79,10 +79,12 @@ def measure_latency(
 
     for _ in range(10):
         start_time = time.time()
+        latency = None
         try:
             status_code, _ = get_request_on_custom_ip(
                 ip, hostname, "/favicon-32x32.png", https, timeout
             )
+            latency = time.time() - start_time
             if status_code < 400:
                 ok = True
             elif status_code == 404 and hostname.startswith("api"):
@@ -100,9 +102,10 @@ def measure_latency(
                     f"Failed to fetch from {hostname} at {ip}:{443 if https else 80}: {status_code}"
                 )
         except Exception as e:
+            latency = latency if latency else (time.time() - start_time)
             print(f"{error('ERROR')}: Failed to connect to {hostname} at {ip}: {e}")
             failures += 1
-        latency = time.time() - start_time
+
         latencies.append(latency)
 
     return TestResult(
